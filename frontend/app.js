@@ -1,9 +1,9 @@
 "use strict";
 const express = require("express");
 
-const session = require("express-session");							// https://www.npmjs.com/package/express-session
-const passport = require("passport");								// https://www.npmjs.com/package/passport
-const WebAppStrategy = require("ibmcloud-appid").WebAppStrategy;	// https://www.npmjs.com/package/ibmcloud-appid
+const session = require("express-session");							
+const passport = require("passport");								
+const WebAppStrategy = require("ibmcloud-appid").WebAppStrategy;	
 
 const app = express();
 
@@ -33,24 +33,9 @@ passport.use(new WebAppStrategy({
 	redirectUri: "https://"+process.env.CE_APP+"."+process.env.CE_SUBDOMAIN+"."+process.env.CE_DOMAIN+"/appid/callback"
 }));
 
-// Handle Login
-app.get('/appid/login', passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
-	successRedirect: '/',
-	forceLogin: true
-}));
 
 // Handle callback
-app.get('/appid/callback', passport.authenticate(WebAppStrategy.STRATEGY_NAME));
-
-// Handle logout
-app.get('/appid/logout', function(req, res){
-	WebAppStrategy.logout(req);
-	res.redirect('/');
-});
-
-
-
-app.get('/api/user', (req, res) => {
+app.get('/appid/callback', passport.authenticate(WebAppStrategy.STRATEGY_NAME)=> {
 	console.log(req.session[WebAppStrategy.AUTH_CONTEXT]);
 	res.json({
 		user: {
@@ -62,10 +47,15 @@ app.get('/api/user', (req, res) => {
 	});
 });
 
+// Handle logout
+app.get('/appid/logout', function(req, res){
+	WebAppStrategy.logout(req);
+	res.redirect('/');
+});
 
-app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 
 
+app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME));   // protect the whole app with AppID Authentication
 app.use(cors());
 app.use(express.static(__dirname + '/public/js'));
 app.use(express.static(__dirname + '/public/images'))
