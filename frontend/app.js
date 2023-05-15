@@ -1,9 +1,9 @@
 "use strict";
 const express = require("express");
 
-const session = require('express-session');							// https://www.npmjs.com/package/express-session
-const passport = require('passport');								// https://www.npmjs.com/package/passport
-const WebAppStrategy = require('ibmcloud-appid').WebAppStrategy;	// https://www.npmjs.com/package/ibmcloud-appid
+const session = require("express-session");							// https://www.npmjs.com/package/express-session
+const passport = require("passport");								// https://www.npmjs.com/package/passport
+const WebAppStrategy = require("ibmcloud-appid").WebAppStrategy;	// https://www.npmjs.com/package/ibmcloud-appid
 
 const app = express();
 
