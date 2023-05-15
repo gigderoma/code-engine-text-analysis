@@ -1,12 +1,71 @@
 "use strict";
 const express = require("express");
+
+const session = require('express-session');							// https://www.npmjs.com/package/express-session
+const passport = require('passport');								// https://www.npmjs.com/package/passport
+const WebAppStrategy = require('ibmcloud-appid').WebAppStrategy;	// https://www.npmjs.com/package/ibmcloud-appid
+
 const app = express();
+
 const request = require("request");
 const path = require("path");
 require("dotenv").config({
   silent: true
 });
 const cors = require("cors");
+
+
+app.use(session({
+	secret: '123456',
+	resave: true,
+	saveUninitialized: true
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.serializeUser((user, cb) => cb(null, user));
+passport.deserializeUser((user, cb) => cb(null, user));
+passport.use(new WebAppStrategy({
+	tenantId: process.env.TENANTID,
+	clientId: process.env.CLIENTID,
+	secret: process.env.SECRET,
+	oauthServerUrl: process.env.OAUTHSRVURL,
+	redirectUri: "https://"+process.env.CE_APP+"."+process.env.CE_SUBDOMAIN+"."+process.env.CE_DOMAIN+"/appid/callback"
+}));
+
+// Handle Login
+app.get('/appid/login', passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: '/',
+	forceLogin: true
+}));
+
+// Handle callback
+app.get('/appid/callback', passport.authenticate(WebAppStrategy.STRATEGY_NAME));
+
+// Handle logout
+app.get('/appid/logout', function(req, res){
+	WebAppStrategy.logout(req);
+	res.redirect('/');
+});
+
+
+
+app.get('/api/user', (req, res) => {
+	console.log(req.session[WebAppStrategy.AUTH_CONTEXT]);
+	res.json({
+		user: {
+			name: req.user.name
+		},
+		email: {
+			name: req.user.email
+		}
+	});
+});
+
+
+app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME));
+
+
 app.use(cors());
 app.use(express.static(__dirname + '/public/js'));
 app.use(express.static(__dirname + '/public/images'))
