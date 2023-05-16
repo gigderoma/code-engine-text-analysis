@@ -35,7 +35,7 @@ passport.use(new WebAppStrategy({
 
 
 // Handle callback
-app.get('/appid/callback', passport.authenticate(WebAppStrategy.STRATEGY_NAME)=> {
+app.get('/appid/callback', passport.authenticate(WebAppStrategy.STRATEGY_NAME){
 	console.log(req.session[WebAppStrategy.AUTH_CONTEXT]);
 	res.json({
 		user: {
