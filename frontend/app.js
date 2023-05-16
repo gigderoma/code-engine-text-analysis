@@ -45,7 +45,17 @@ app.get('/appid/logout', function(req, res){
 	res.redirect('/');
 });
 
-
+app.get('/api/user', (req, res) => {
+	console.log(req.session[WebAppStrategy.AUTH_CONTEXT]);
+	res.json({
+		user: {
+			name: req.user.name
+		},
+		email: {
+			name: req.user.email
+		}
+	});
+});
 
 app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME));   // protect the whole app with AppID Authentication
 app.use(cors());
