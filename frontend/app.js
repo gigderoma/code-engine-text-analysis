@@ -34,18 +34,10 @@ passport.use(new WebAppStrategy({
 }));
 
 
+
 // Handle callback
-app.get('/appid/callback', passport.authenticate(WebAppStrategy.STRATEGY_NAME){
-	console.log(req.session[WebAppStrategy.AUTH_CONTEXT]);
-	res.json({
-		user: {
-			name: req.user.name
-		},
-		email: {
-			name: req.user.email
-		}
-	});
-});
+app.get('/appid/callback', passport.authenticate(WebAppStrategy.STRATEGY_NAME));
+
 
 // Handle logout
 app.get('/appid/logout', function(req, res){
