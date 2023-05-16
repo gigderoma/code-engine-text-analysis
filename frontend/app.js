@@ -14,7 +14,7 @@ require("dotenv").config({
 });
 const cors = require("cors");
 
-
+// Handle user session
 app.use(session({
 	secret: '123456',
 	resave: true,
@@ -25,6 +25,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 passport.serializeUser((user, cb) => cb(null, user));
 passport.deserializeUser((user, cb) => cb(null, user));
+
+// Inizialize AppID service
 passport.use(new WebAppStrategy({
 	tenantId: process.env.TENANTID,
 	clientId: process.env.CLIENTID,
